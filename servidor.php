@@ -14,13 +14,19 @@ $server->register("getInsertarEmpleado", array(
     "nombreCorto" => "xsd:string"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarEmpleado", "rpc", "encoded", "Insertar empleados");
 
 $server->register("getInsertarPago", array(
+    "codigoIdentificacionTipo" => "xsd:string",
+    "identificacionNumero" => "xsd:string",
     "codigoEmpresa" => "xsd:integer",
+    "fechaDesde" => "xsd:date",
+    "fechaHasta" => "xsd:date",
     "numero" => "xsd:integer",
-    "nombre1" => "xsd:string"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
+    "vrDeduccion" => "xsd:integer",
+    "vrNeto" => "xsd:integer",
+    "vrDevengado" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
 
 function getInsertarEmpleado($codigoIdentificacionTipo, $identificacionNumero, $nombre1, $nombre2, $apellido1, $apellido2, $nombreCorto) {
     $respuesta = "01";
-    $servidor = new mysqli("localhost", "root", "70143086", "bdardid");
+    $servidor = new mysqli("localhost", "root", "1152689427", "bdardid");
     if ($servidor->connect_error) {
         die("Connection failed: " . $servidor->connect_error);
     }
@@ -43,9 +49,11 @@ function getInsertarEmpleado($codigoIdentificacionTipo, $identificacionNumero, $
     return $respuesta;
 }
 
-function getInsertarPago($codigoEmpresa, $numero) {
+function getInsertarPago($codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $fechaDesde, $fechaHasta, $numero, $vrDeduccion, $vrNeto, $vrDevengado) {
     $respuesta = "01";
-    $servidor = new mysqli("localhost", "root", "70143086", "bdardid");
+    $fecha1 = date_create($fechaDesde);
+    $fecha2 = date_create($fechaHasta);    
+    $servidor = new mysqli("localhost", "root", "1152689427", "bdardid");
     if ($servidor->connect_error) {
         die("Connection failed: " . $servidor->connect_error);
     }
@@ -54,7 +62,7 @@ function getInsertarPago($codigoEmpresa, $numero) {
         $sentencia->execute();
         $sentencia->store_result();
         if ($sentencia->num_rows <= 0) {
-            $strSql = "INSERT INTO pago (codigo_empresa_fk, numero) VALUES ($codigoEmpresa, $numero);";
+            $strSql = "INSERT INTO pago (codigo_empresa_fk,  numero, vr_deducciones, vr_neto, vr_devengado) VALUES ($codigoEmpresa,  $numero, $vrDeduccion, $vrNeto, $vrDevengado);";
             if ($servidor->query($strSql) === TRUE) {
                 $respuesta = "01";
             } else {

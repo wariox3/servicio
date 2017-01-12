@@ -17,6 +17,18 @@ if ($error) {
                 "apellido1" => "ESTRADA",
                 "apellido2" => "ZULUAGA",
                 "nombreCorto" => "MARIO ANDRES ESTRADA ZULUAGA",));
+    
+      $result = $cliente->call("getInsertarPago", 
+            array(
+                "codigoIdentificacionTipo" => "CC", 
+                "identificacionNumero" => "70143086",
+                "codigoEmpresa" => "1",
+                "fechaDesde" => "2016-01-05",
+                "fechaHasta" => "2016-01-06",
+                "numero" => "987654321",
+                "vrDeduccion" => "3",
+                "vrNeto" => "2",
+                "vrDevengado" => "1",));
 
 if ($cliente->fault) {
   echo "<h2>Fault</h2><pre>";
