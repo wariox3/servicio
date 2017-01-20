@@ -4,6 +4,7 @@ require_once "nusoap/lib/nusoap.php";
 
 $server = new soap_server();
 $server->configureWSDL("producto", "urn:producto");
+
 $server->register("getInsertarEmpleado", array(
     "codigoIdentificacionTipo" => "xsd:string",
     "identificacionNumero" => "xsd:string",
@@ -21,31 +22,29 @@ $server->register("getInsertarPago", array(
     "fechaDesde" => "xsd:date",
     "fechaHasta" => "xsd:date",
     "numero" => "xsd:integer",
+    "vrSalario" => "xsd:integer",
     "vrDeduccion" => "xsd:integer",
     "vrNeto" => "xsd:integer",
     "vrDevengado" => "xsd:integer",
-    "centroCostos" => "xsd:string",
+    "grupoDePago" => "xsd:string",
     "zona" => "xsd:string",
     "periodoPago" => "xsd:string",
     "cuenta" => "xsd:string",
     "banco" => "xsd:string",
     "pension" => "xsd:string",
-    "salud" => "xsd:string",
-    "salario" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
+    "salud" => "xsd:string"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
 
 $server->register("getInsertarPagoDetalle", array(
-    "codigoIdentificacionTipo" => "xsd:string",
-    "identificacionNumero" => "xsd:string",
     "codigoEmpresa" => "xsd:integer",
     "codigoNumero" => "xsd:integer",
     "codigoConcepto" => "xsd:integer",
-    "vrPago" => "xsd:integer",
     "operacion" => "xsd:integer",
-    "vrPagoNeto" => "xsd:integer",
     "horas" => "xsd:integer",
     "porcentaje" => "xsd:integer",
     "dias" => "xsd:integer",
     "concepto" => "xsd:string",
+    "vrPago" => "xsd:integer",
+    "vrPagoNeto" => "xsd:integer",
     "vrhora" => "xsd:integer",
     "vrDevengado" => "xsd:integer",
     "vrDeducciones" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
@@ -77,7 +76,7 @@ $server->register("getInsertarPagoDetalle", array(
     return $respuesta;
 }
 
-function getInsertarPago( $codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $codigoPagoTipo, $fechaDesde, $fechaHasta, $numero, $vrDeduccion, $vrNeto, $vrDevengado, $cargo, $centroCostos, $zona, $periodoPago, $cuenta, $banco, $pension, $salud, $salario) {
+function getInsertarPago( $codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $codigoPagoTipo, $fechaDesde, $fechaHasta, $numero, $vrSalario, $vrDeduccion, $vrNeto, $vrDevengado, $cargo, $grupoDePago, $zona, $periodoPago, $cuenta, $banco, $pension, $salud ) {
     $respuesta = "00";
     $date1 = date_create("$fechaDesde");
     $fecha1= date_format($date1, "Y-m-d");
@@ -92,7 +91,7 @@ function getInsertarPago( $codigoIdentificacionTipo, $identificacionNumero, $cod
         $sentencia->execute();
         $sentencia->store_result();
         if ($sentencia->num_rows <= 0) {
-            $strSql = "INSERT INTO pago (codigo_empresa_fk, codigo_pago_tipo_fk, fecha_desde, fecha_hasta, numero, vr_deducciones, vr_neto, vr_devengado, cargo, centro_costos, zona, periodo_pago, cuenta, banco, pension, salud, salario) VALUES ('$codigoEmpresa', '$codigoPagoTipo','$fecha1','$fecha2' , '$numero', '$vrDeduccion', '$vrNeto', '$vrDevengado', '$cargo', '$centroCostos', '$zona', '$periodoPago', '$cuenta', '$banco', '$pension', '$salud', '$salario');";
+            $strSql = "INSERT INTO pago (codigo_empresa_fk, codigo_pago_tipo_fk, fecha_desde, fecha_hasta, numero, vr_deducciones, vr_neto, vr_devengado, cargo, grupo_de_pago, zona, periodo_pago, cuenta, banco, pension, salud, vr_salario) VALUES ('$codigoEmpresa', '$codigoPagoTipo','$fecha1','$fecha2' , '$numero', '$vrDeduccion', '$vrNeto', '$vrDevengado', '$cargo', '$grupoDePago', '$zona', '$periodoPago', '$cuenta', '$banco', '$pension', '$salud', '$vrSalario');";
             if ($servidor->query($strSql) === TRUE) {
                 $respuesta = "inserto pago";
             } else {
@@ -108,7 +107,7 @@ function getInsertarPago( $codigoIdentificacionTipo, $identificacionNumero, $cod
 
                                                                                                                                                            
                                                                                                                                   
-function getInsertarPagoDetalle($codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $codigoNumero, $codigoConcepto, $vrPago, $operacion, $vrPagoNeto, $horas, $porcentaje, $dias, $concepto, $vrHora, $vrDevengado, $vrDeducciones) {
+function getInsertarPagoDetalle($codigoEmpresa, $codigoNumero, $codigoConcepto, $operacion, $horas, $porcentaje, $dias, $concepto, $vrPago, $vrPagoNeto, $vrHora, $vrDevengado, $vrDeducciones) {
     $respuesta = "00";
     $servidor = new mysqli("localhost", "root", "1152689427", "bdardid");
     if ($servidor->connect_error) {
@@ -132,8 +131,6 @@ function getInsertarPagoDetalle($codigoIdentificacionTipo, $identificacionNumero
     }
     return $respuesta;
 }
-
-
 if (!isset($HTTP_RAW_POST_DATA))
     $HTTP_RAW_POST_DATA = file_get_contents('php://input');
 $server->service($HTTP_RAW_POST_DATA);
