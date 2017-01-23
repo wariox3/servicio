@@ -1,7 +1,7 @@
 <?php
 
 require_once "nusoap/lib/nusoap.php";
-
+require_once "conexion.php";
 $server = new soap_server();
 $server->configureWSDL("producto", "urn:producto");
 
@@ -28,6 +28,7 @@ $server->register("getInsertarPago", array(
     "vrDeduccion" => "xsd:integer",
     "vrNeto" => "xsd:integer",
     "vrDevengado" => "xsd:integer",
+    "cargo" => "xsd:string",
     "grupoDePago" => "xsd:string",
     "zona" => "xsd:string",
     "periodoPago" => "xsd:string",
@@ -53,10 +54,7 @@ $server->register("getInsertarPagoDetalle", array(
 
     function getInsertarEmpleado($codigoIdentificacionTipo, $identificacionNumero, $nombre1, $nombre2, $apellido1, $apellido2, $nombreCorto, $correo) {
     $respuesta = "01";
-    $servidor = new mysqli("localhost", "root", "1152689427", "bdardid");
-    if ($servidor->connect_error) {
-        die("Connection failed: " . $servidor->connect_error);
-    }
+    $servidor = conectar();
     $strSql = "SELECT codigo_empleado_pk FROM empleado WHERE codigo_identificacion_tipo_fk = '" . $codigoIdentificacionTipo . "' AND identificacion_numero = '" . $identificacionNumero . "'";
     if ($sentencia = $servidor->prepare($strSql)) {
         $sentencia->execute();
@@ -78,10 +76,7 @@ $server->register("getInsertarPagoDetalle", array(
 
     function getInsertarPago($codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $numero, $codigoPagoTipo, $fechaDesde, $fechaHasta, $vrSalario, $vrSalarioEmpleado, $vrDeduccion, $vrNeto, $vrDevengado, $cargo, $grupoDePago, $zona, $periodoPago, $cuenta, $banco, $pension, $salud ) {    
     $respuesta = "00";
-    $servidor = new mysqli("localhost", "root", "1152689427", "bdardid");
-    if ($servidor->connect_error) {
-        die("Connection failed: " . $servidor->connect_error);
-    }
+    $servidor = conectar();    
     $strSql = "SELECT codigo_pago_pk FROM pago WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND numero = '" . $numero . "'";
     if ($sentencia = $servidor->prepare($strSql)) {
         $sentencia->execute();
@@ -105,15 +100,13 @@ $server->register("getInsertarPagoDetalle", array(
             $respuesta = "01";
         }
         $sentencia->close();
-    }        
-
-
+    }
     return $respuesta;
 }                                                                                                                                                           
                                                                                                                                   
     function getInsertarPagoDetalle($codigoEmpresa, $numero, $codigo, $codigoConcepto, $nombreConcepto, $operacion, $horas, $dias, $porcentaje, $vrHora, $vrPago) {
     $respuesta = "00";
-    $servidor = new mysqli("localhost", "root", "1152689427", "bdardid");
+    $servidor = new mysqli("localhost", "root", "70143086", "bdardid");
     if ($servidor->connect_error) {
         die("Connection failed: " . $servidor->connect_error);
     }
@@ -149,5 +142,6 @@ $server->register("getInsertarPagoDetalle", array(
 
     if (!isset($HTTP_RAW_POST_DATA))
         $HTTP_RAW_POST_DATA = file_get_contents('php://input');
+    
     $server->service($HTTP_RAW_POST_DATA);
 ?>
