@@ -8,26 +8,29 @@ if ($error) {
     echo "<h2>Constructor error</h2><pre>" . $error . "</pre>";
 }      
 
-   $result = $cliente->call("getInsertarEmpleado", 
-            array(
-                "codigoIdentificacionTipo" => "CC", 
-                "identificacionNumero" => "1152689427",
-                "nombre1" => "MARIO",
-                "nombre2" => "ANDRES",
-                "apellido1" => "ESTRADA",
-                "apellido2" => "ZULUAGA",
-                "nombreCorto" => "MARIO ANDRES ESTRADA ZULUAGA",));
+//   $result = $cliente->call("getInsertarEmpleado", 
+//            array(
+//                "codigoIdentificacionTipo" => "CC", 
+//                "identificacionNumero" => "1152689427",
+//                "nombre1" => "MARIO",
+//                "nombre2" => "ANDRES",
+//                "apellido1" => "ESTRADA",
+//                "apellido2" => "ZULUAGA",
+//                "nombreCorto" => "MARIO ANDRES ESTRADA ZULUAGA",
+//                "correo" => "d@d.com"));
     
-      $result = $cliente->call("getInsertarPago", 
+
+     /* $result = $cliente->call("getInsertarPago", 
             array(
                 "codigoIdentificacionTipo" => "CC", 
                 "identificacionNumero" => "1152689427",
                 "codigoEmpresa" => "1",
+                "numero" => "111",
                 "codigoPagoTipo" => "2",
                 "fechaDesde" => "2017-01-05",
                 "fechaHasta" => "2017-01-06",
-                "numero" => "111",
                 "vrSalario" => "10000000",
+                "vrSalarioEmpleado" => "10000000",
                 "vrDeduccion" => "3",
                 "vrNeto" => "2",
                 "vrDevengado" => "1",
@@ -39,23 +42,21 @@ if ($error) {
                 "banco" => "davivienda",
                 "pension" => "porvenir",
                 "salud" => "sura"
-                ));
+                ));*/
       
       $result = $cliente->call("getInsertarPagoDetalle", 
             array(
                 "codigoEmpresa" => "1",
-                "codigoNumero" => "111",
+                "numero" => "111",
                 "codigoConcepto" => "1",
-                "operacion" => "0000",
-                "horas" => "0000",
-                "porcentaje" => "00000",
-                "dias" => "00000",
-                "concepto" => "Prima",
-                "vrPago" => "0000",
-                "vrPagoNeto" => "0000",
-                "vrHora" => "00000",
-                "vrDevengado" => "000000",
-                "vrDeducciones" => "00000",));
+                "codigo" => "999",
+                "nombreConcepto" => "Prima",
+                "operacion" => "1",                
+                "horas" => "0",
+                "dias" => "0",
+                "porcentaje" => "0",                
+                "vrHora" => "0",
+                "vrPago" => "0"));
 
 if ($cliente->fault) {
   echo "<h2>Fault</h2><pre>";

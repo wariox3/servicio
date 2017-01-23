@@ -12,17 +12,19 @@ $server->register("getInsertarEmpleado", array(
     "nombre2" => "xsd:string",
     "apellido1" => "xsd:string",
     "apellido2" => "xsd:string",
-    "nombreCorto" => "xsd:string"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarEmpleado", "rpc", "encoded", "Insertar empleados");
+    "nombreCorto" => "xsd:string",
+    "correo" => "xsd:string"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarEmpleado", "rpc", "encoded", "Insertar empleados");
 
 $server->register("getInsertarPago", array(
     "codigoIdentificacionTipo" => "xsd:string",
     "identificacionNumero" => "xsd:string",
     "codigoEmpresa" => "xsd:integer",
-    "codigoPagoTipo" => "xsd:integer",
-    "fechaDesde" => "xsd:date",
-    "fechaHasta" => "xsd:date",
     "numero" => "xsd:integer",
+    "codigoPagoTipo" => "xsd:integer",
+    "fechaDesde" => "xsd:string",
+    "fechaHasta" => "xsd:string",
     "vrSalario" => "xsd:integer",
+    "vrSalarioEmpleado" => "xsd:integer",
     "vrDeduccion" => "xsd:integer",
     "vrNeto" => "xsd:integer",
     "vrDevengado" => "xsd:integer",
@@ -36,22 +38,20 @@ $server->register("getInsertarPago", array(
 
 $server->register("getInsertarPagoDetalle", array(
     "codigoEmpresa" => "xsd:integer",
-    "codigoNumero" => "xsd:integer",
+    "numero" => "xsd:integer",
+    "codigo" => "xsd:integer",
     "codigoConcepto" => "xsd:integer",
+    "nombreConcepto" => "xsd:string",
     "operacion" => "xsd:integer",
     "horas" => "xsd:integer",
-    "porcentaje" => "xsd:integer",
     "dias" => "xsd:integer",
-    "concepto" => "xsd:string",
-    "vrPago" => "xsd:integer",
-    "vrPagoNeto" => "xsd:integer",
-    "vrhora" => "xsd:integer",
-    "vrDevengado" => "xsd:integer",
-    "vrDeducciones" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
+    "porcentaje" => "xsd:integer",
+    "vrHora" => "xsd:integer",
+    "vrPago" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
 
 
 
-    function getInsertarEmpleado($codigoIdentificacionTipo, $identificacionNumero, $nombre1, $nombre2, $apellido1, $apellido2, $nombreCorto) {
+    function getInsertarEmpleado($codigoIdentificacionTipo, $identificacionNumero, $nombre1, $nombre2, $apellido1, $apellido2, $nombreCorto, $correo) {
     $respuesta = "01";
     $servidor = new mysqli("localhost", "root", "1152689427", "bdardid");
     if ($servidor->connect_error) {
@@ -62,26 +62,22 @@ $server->register("getInsertarPagoDetalle", array(
         $sentencia->execute();
         $sentencia->store_result();
         if ($sentencia->num_rows <= 0) {
-            $strSql = "INSERT INTO empleado (codigo_identificacion_tipo_fk, identificacion_numero, nombre1, nombre2, apellido1, apellido2, nombre_corto) VALUES ('$codigoIdentificacionTipo', '$identificacionNumero', '$nombre1', '$nombre2', '$apellido1', '$apellido2', '$nombreCorto');";
+            $strSql = "INSERT INTO empleado (codigo_identificacion_tipo_fk, identificacion_numero, nombre1, nombre2, apellido1, apellido2, nombre_corto, correo) VALUES ('$codigoIdentificacionTipo', '$identificacionNumero', '$nombre1', '$nombre2', '$apellido1', '$apellido2', '$nombreCorto', '$correo');";
             if ($servidor->query($strSql) === TRUE) {
-                $respuesta = " inseto empelado";
+                $respuesta = "01";
             } else {
-                $respuesta = "No inserto empleado";
+                $respuesta = "02";
             }
         } else {
-            $respuesta = "Estos datos ya existen en el Empleado";
+            $respuesta = "01";
         }
         $sentencia->close();
     }
     return $respuesta;
 }
 
-function getInsertarPago( $codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $codigoPagoTipo, $fechaDesde, $fechaHasta, $numero, $vrSalario, $vrDeduccion, $vrNeto, $vrDevengado, $cargo, $grupoDePago, $zona, $periodoPago, $cuenta, $banco, $pension, $salud ) {
+    function getInsertarPago($codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $numero, $codigoPagoTipo, $fechaDesde, $fechaHasta, $vrSalario, $vrSalarioEmpleado, $vrDeduccion, $vrNeto, $vrDevengado, $cargo, $grupoDePago, $zona, $periodoPago, $cuenta, $banco, $pension, $salud ) {    
     $respuesta = "00";
-    $date1 = date_create("$fechaDesde");
-    $fecha1= date_format($date1, "Y-m-d");
-    $date2 = date_create("$fechaHasta");
-    $fecha2= date_format($date2, "Y-m-d");
     $servidor = new mysqli("localhost", "root", "1152689427", "bdardid");
     if ($servidor->connect_error) {
         die("Connection failed: " . $servidor->connect_error);
@@ -91,47 +87,67 @@ function getInsertarPago( $codigoIdentificacionTipo, $identificacionNumero, $cod
         $sentencia->execute();
         $sentencia->store_result();
         if ($sentencia->num_rows <= 0) {
-            $strSql = "INSERT INTO pago (codigo_empresa_fk, codigo_pago_tipo_fk, fecha_desde, fecha_hasta, numero, vr_deducciones, vr_neto, vr_devengado, cargo, grupo_de_pago, zona, periodo_pago, cuenta, banco, pension, salud, vr_salario) VALUES ('$codigoEmpresa', '$codigoPagoTipo','$fecha1','$fecha2' , '$numero', '$vrDeduccion', '$vrNeto', '$vrDevengado', '$cargo', '$grupoDePago', '$zona', '$periodoPago', '$cuenta', '$banco', '$pension', '$salud', '$vrSalario');";
-            if ($servidor->query($strSql) === TRUE) {
-                $respuesta = "inserto pago";
+            $strSql = "SELECT codigo_empleado_pk FROM empleado WHERE codigo_identificacion_tipo_fk = '$codigoIdentificacionTipo' AND identificacion_numero = '$identificacionNumero';";
+            if ($arEmpleados = $servidor->query($strSql, MYSQLI_USE_RESULT)) {
+                $arEmpleado = $arEmpleados->fetch_assoc();
+                $codigoEmpleado = $arEmpleado['codigo_empleado_pk'];
+                $arEmpleados->close();
+                $strSql = "INSERT INTO pago (codigo_empresa_fk, codigo_pago_tipo_fk, codigo_empleado_fk, fecha_desde, fecha_hasta, numero, vr_deducciones, vr_neto, vr_devengado, cargo, grupo_de_pago, zona, periodo_pago, cuenta, banco, pension, salud, vr_salario, vr_salario_empleado) VALUES ('$codigoEmpresa', '$codigoPagoTipo', '$codigoEmpleado','$fechaDesde','$fechaHasta' , '$numero', '$vrDeduccion', '$vrNeto', '$vrDevengado', '$cargo', '$grupoDePago', '$zona', '$periodoPago', '$cuenta', '$banco', '$pension', '$salud', '$vrSalario','$vrSalarioEmpleado');";
+                if ($servidor->query($strSql) === TRUE) {
+                    $respuesta = "01";
+                } else {
+                    $respuesta = "02";
+                }                   
             } else {
-                $respuesta = "No ingreso el pago ".$codigoPagoTipo;
-            }
+                $respuesta = "02";
+            }           
         } else {
-            $respuesta = "estos datos ya existen en el pago";
+            $respuesta = "01";
         }
         $sentencia->close();
-    }
-    return $respuesta;
-}
+    }        
 
-                                                                                                                                                           
+
+    return $respuesta;
+}                                                                                                                                                           
                                                                                                                                   
-function getInsertarPagoDetalle($codigoEmpresa, $codigoNumero, $codigoConcepto, $operacion, $horas, $porcentaje, $dias, $concepto, $vrPago, $vrPagoNeto, $vrHora, $vrDevengado, $vrDeducciones) {
+    function getInsertarPagoDetalle($codigoEmpresa, $numero, $codigo, $codigoConcepto, $nombreConcepto, $operacion, $horas, $dias, $porcentaje, $vrHora, $vrPago) {
     $respuesta = "00";
     $servidor = new mysqli("localhost", "root", "1152689427", "bdardid");
     if ($servidor->connect_error) {
         die("Connection failed: " . $servidor->connect_error);
     }
-    $strSql = "SELECT codigo_pago_pk FROM pago WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND numero = '" . $numero . "'";
+    $strSql = "SELECT codigo_pago_detalle_pk FROM pago_detalle WHERE codigo = " . $codigo;
     if ($sentencia = $servidor->prepare($strSql)) {
         $sentencia->execute();
         $sentencia->store_result();
         if ($sentencia->num_rows <= 0) {
-            $strSql = "INSERT INTO pago_detalle (codigo_empresa_fk,  codigo_numero_fk, codigo_concepto_fk, vr_pago, operacion, vr_pago_neto, horas, porcentaje, dias, concepto, vr_hora, vr_devengado, vr_deduccion ) VALUES ('$codigoEmpresa', '$codigoNumero', '$codigoConcepto', '$vrPago', '$operacion', '$vrPagoNeto', '$horas', '$porcentaje', '$dias', '$concepto', '$vrHora', '$vrDevengado', '$vrDeducciones');";
-            if ($servidor->query($strSql) === TRUE) {
-                $respuesta = "inserto pago DETALLE";
+            $strSql = "SELECT codigo_pago_pk FROM pago WHERE codigo_empresa_fk = '$codigoEmpresa' AND numero = '$numero';";
+            if ($arPagos = $servidor->query($strSql, MYSQLI_USE_RESULT)) {
+                $arPago = $arPagos->fetch_assoc();
+                $codigoPago = $arPago['codigo_pago_pk'];
+                $arPagos->close();
+                
+                $strSql = "INSERT INTO pago_detalle (codigo, codigo_pago_fk, codigo_empresa_fk, numero, codigo_concepto_fk, nombre_concepto, operacion, horas, dias, porcentaje, vr_hora, vr_pago ) VALUES ('$codigo', '$codigoPago', '$codigoEmpresa', '$numero','$codigoConcepto', '$nombreConcepto', '$operacion', '$horas', '$dias', '$porcentaje', '$vrHora', '$vrPago');";
+                if ($servidor->query($strSql) === TRUE) {
+                    $respuesta = "01";
+                } else {
+                    $respuesta = "02";
+                }                
             } else {
-                $respuesta = "no inserto pago  DETALLE";
+                $respuesta = "02";
             }
         } else {
-            $respuesta = "estos datos ya existen en el pago DETALLE";
+            $respuesta = "01";
         }
         $sentencia->close();
+    } else {
+        $respuesta = "02";
     }
     return $respuesta;
 }
-if (!isset($HTTP_RAW_POST_DATA))
-    $HTTP_RAW_POST_DATA = file_get_contents('php://input');
-$server->service($HTTP_RAW_POST_DATA);
+
+    if (!isset($HTTP_RAW_POST_DATA))
+        $HTTP_RAW_POST_DATA = file_get_contents('php://input');
+    $server->service($HTTP_RAW_POST_DATA);
 ?>
