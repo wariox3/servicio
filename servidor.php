@@ -106,10 +106,7 @@ $server->register("getInsertarPagoDetalle", array(
                                                                                                                                   
     function getInsertarPagoDetalle($codigoEmpresa, $numero, $codigo, $codigoConcepto, $nombreConcepto, $operacion, $horas, $dias, $porcentaje, $vrHora, $vrPago) {
     $respuesta = "02No se ejecuta ninguna sentencia";
-    $servidor = new mysqli("localhost", "root", "70143086", "bdardid");
-    if ($servidor->connect_error) {
-        die("Connection failed: " . $servidor->connect_error);
-    }
+    $servidor = conectar();
     $strSql = "SELECT codigo_pago_detalle_pk FROM pago_detalle WHERE codigo = " . $codigo;
     if ($sentencia = $servidor->prepare($strSql)) {
         $sentencia->execute();
