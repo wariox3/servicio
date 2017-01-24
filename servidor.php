@@ -135,7 +135,7 @@ $server->register("getInsertarPagoDetalle", array(
         }
         $sentencia->close();
     } else {
-        $respuesta = "02";
+        $respuesta = "02".$servidor->error;
     }
     return $respuesta;
 }
