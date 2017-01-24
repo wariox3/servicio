@@ -64,7 +64,7 @@ $server->register("getInsertarPagoDetalle", array(
             if ($servidor->query($strSql) === TRUE) {
                 $respuesta = "01";
             } else {
-                $respuesta = "02";
+                $respuesta = "02" . $servidor->error;
             }
         } else {
             $respuesta = "01";
@@ -75,7 +75,7 @@ $server->register("getInsertarPagoDetalle", array(
 }
 
     function getInsertarPago($codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $numero, $codigoPagoTipo, $fechaDesde, $fechaHasta, $vrSalario, $vrSalarioEmpleado, $vrDeduccion, $vrNeto, $vrDevengado, $cargo, $grupoDePago, $zona, $periodoPago, $cuenta, $banco, $pension, $salud ) {    
-    $respuesta = "00";
+    $respuesta = "02No se ejecuto ninguna sentencia";
     $servidor = conectar();    
     $strSql = "SELECT codigo_pago_pk FROM pago WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND numero = '" . $numero . "'";
     if ($sentencia = $servidor->prepare($strSql)) {
@@ -91,10 +91,10 @@ $server->register("getInsertarPagoDetalle", array(
                 if ($servidor->query($strSql) === TRUE) {
                     $respuesta = "01";
                 } else {
-                    $respuesta = "02";
+                    $respuesta = "02" . $servidor->error;
                 }                   
             } else {
-                $respuesta = "02";
+                $respuesta = '02'.$servidor->error;
             }           
         } else {
             $respuesta = "01";
@@ -105,7 +105,7 @@ $server->register("getInsertarPagoDetalle", array(
 }                                                                                                                                                           
                                                                                                                                   
     function getInsertarPagoDetalle($codigoEmpresa, $numero, $codigo, $codigoConcepto, $nombreConcepto, $operacion, $horas, $dias, $porcentaje, $vrHora, $vrPago) {
-    $respuesta = "00";
+    $respuesta = "02No se ejecuta ninguna sentencia";
     $servidor = new mysqli("localhost", "root", "70143086", "bdardid");
     if ($servidor->connect_error) {
         die("Connection failed: " . $servidor->connect_error);
@@ -125,10 +125,10 @@ $server->register("getInsertarPagoDetalle", array(
                 if ($servidor->query($strSql) === TRUE) {
                     $respuesta = "01";
                 } else {
-                    $respuesta = "02";
+                    $respuesta = "02" .$servidor->error;
                 }                
             } else {
-                $respuesta = "02";
+                $respuesta = "02".$servidor->error;
             }
         } else {
             $respuesta = "01";
