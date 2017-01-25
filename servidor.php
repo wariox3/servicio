@@ -3,7 +3,7 @@
 require_once "nusoap/lib/nusoap.php";
 require_once "conexion.php";
 $server = new soap_server();
-$server->configureWSDL("producto", "urn:producto");
+$server->configureWSDL("funcionesArdid", "urn:funciones");
 
 $server->register("getInsertarEmpleado", array(
     "codigoIdentificacionTipo" => "xsd:string",
@@ -48,8 +48,21 @@ $server->register("getInsertarPagoDetalle", array(
     "dias" => "xsd:integer",
     "porcentaje" => "xsd:integer",
     "vrHora" => "xsd:integer",
-    "vrPago" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
+    "vrPago" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago detalle");
 
+$server->register("getInsertarContrato", array(
+    "codigoEmpresa" => "xsd:integer",
+    "numero" => "xsd:string",
+    "codigo" => "xsd:integer",
+    "codigoClase" => "xsd:integer",
+    "codigoIdentificacionTipo" => "xsd:string",
+    "identificacionNumero" => "xsd:string",
+    "fechaDesde" => "xsd:string",
+    "fechaHasta" => "xsd:string", 
+    "cargo" => "xsd:string",
+    "grupoPago" => "xsd:string",
+    "vrSalario" => "xsd:integer",
+    "vigente" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarContrato", "rpc", "encoded", "Insertar contrato");
 
 
     function getInsertarEmpleado($codigoIdentificacionTipo, $identificacionNumero, $nombre1, $nombre2, $apellido1, $apellido2, $nombreCorto, $correo) {
@@ -74,7 +87,7 @@ $server->register("getInsertarPagoDetalle", array(
     return $respuesta;
 }
 
-    function getInsertarPago($codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $numero, $codigoPagoTipo, $fechaDesde, $fechaHasta, $vrSalario, $vrSalarioEmpleado, $vrDeduccion, $vrNeto, $vrDevengado, $cargo, $grupoDePago, $zona, $periodoPago, $cuenta, $banco, $pension, $salud ) {    
+    function getInsertarPago($codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $numero, $codigoPagoTipo, $fechaDesde, $fechaHasta, $vrSalario, $vrSalarioEmpleado, $vrDeduccion, $vrNeto, $vrDevengado, $cargo, $grupoPago, $zona, $periodoPago, $cuenta, $banco, $pension, $salud ) {    
     $respuesta = "02No se ejecuto ninguna sentencia";
     $servidor = conectar();    
     $strSql = "SELECT codigo_pago_pk FROM pago WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND numero = '" . $numero . "'";
@@ -87,7 +100,7 @@ $server->register("getInsertarPagoDetalle", array(
                 $arEmpleado = $arEmpleados->fetch_assoc();
                 $codigoEmpleado = $arEmpleado['codigo_empleado_pk'];
                 $arEmpleados->close();
-                $strSql = "INSERT INTO pago (codigo_empresa_fk, codigo_pago_tipo_fk, codigo_empleado_fk, fecha_desde, fecha_hasta, numero, vr_deducciones, vr_neto, vr_devengado, cargo, grupo_de_pago, zona, periodo_pago, cuenta, banco, pension, salud, vr_salario, vr_salario_empleado) VALUES ('$codigoEmpresa', '$codigoPagoTipo', '$codigoEmpleado','$fechaDesde','$fechaHasta' , '$numero', '$vrDeduccion', '$vrNeto', '$vrDevengado', '$cargo', '$grupoDePago', '$zona', '$periodoPago', '$cuenta', '$banco', '$pension', '$salud', '$vrSalario','$vrSalarioEmpleado');";
+                $strSql = "INSERT INTO pago (codigo_empresa_fk, codigo_pago_tipo_fk, codigo_empleado_fk, fecha_desde, fecha_hasta, numero, vr_deducciones, vr_neto, vr_devengado, cargo, grupo_pago, zona, periodo_pago, cuenta, banco, pension, salud, vr_salario, vr_salario_empleado) VALUES ('$codigoEmpresa', '$codigoPagoTipo', '$codigoEmpleado','$fechaDesde','$fechaHasta' , '$numero', '$vrDeduccion', '$vrNeto', '$vrDevengado', '$cargo', '$grupoPago', '$zona', '$periodoPago', '$cuenta', '$banco', '$pension', '$salud', '$vrSalario','$vrSalarioEmpleado');";
                 if ($servidor->query($strSql) === TRUE) {
                     $respuesta = "01";
                 } else {
@@ -136,6 +149,36 @@ $server->register("getInsertarPagoDetalle", array(
     }
     return $respuesta;
 }
+
+    function getInsertarContrato($codigoEmpresa, $numero, $codigo, $codigoClase, $codigoIdentificacionTipo, $identificacionNumero, $fechaDesde, $fechaHasta, $cargo, $grupoPago, $vrSalario, $vigente) {    
+    $respuesta = "02No se ejecuto ninguna sentencia";
+    $servidor = conectar();    
+    $strSql = "SELECT codigo_pago_pk FROM pago WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND numero = '" . $numero . "'";
+    if ($sentencia = $servidor->prepare($strSql)) {
+        $sentencia->execute();
+        $sentencia->store_result();
+        if ($sentencia->num_rows <= 0) {
+            $strSql = "SELECT codigo_empleado_pk FROM empleado WHERE codigo_identificacion_tipo_fk = '$codigoIdentificacionTipo' AND identificacion_numero = '$identificacionNumero';";
+            if ($arEmpleados = $servidor->query($strSql, MYSQLI_USE_RESULT)) {
+                $arEmpleado = $arEmpleados->fetch_assoc();
+                $codigoEmpleado = $arEmpleado['codigo_empleado_pk'];
+                $arEmpleados->close();                
+                $strSql = "INSERT INTO contrato (codigo_empresa_fk, numero, codigo, codigo_clase_fk, codigo_empleado_fk, fecha_desde, fecha_hasta, cargo, grupo_pago, vr_salario, vigente) VALUES ('$codigoEmpresa', '$numero', '$codigo', '$codigoClase', '$codigoEmpleado','$fechaDesde','$fechaHasta' , '$cargo', '$grupoPago', '$vrSalario', '$vigente');";
+                if ($servidor->query($strSql) === TRUE) {
+                    $respuesta = "01";
+                } else {
+                    $respuesta = "02" . $servidor->error . $strSql;
+                }                   
+            } else {
+                $respuesta = '02'.$servidor->error;
+            }           
+        } else {
+            $respuesta = "01";
+        }
+        $sentencia->close();
+    }
+    return $respuesta;
+}                                                                                                                                                           
 
     if (!isset($HTTP_RAW_POST_DATA))
         $HTTP_RAW_POST_DATA = file_get_contents('php://input');
