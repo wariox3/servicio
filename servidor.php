@@ -21,6 +21,7 @@ $server->register("getInsertarPago", array(
     "codigoEmpresa" => "xsd:integer",
     "numero" => "xsd:integer",
     "codigoPagoTipo" => "xsd:integer",
+    "codigoContrato" => "xsd:integer",
     "fechaDesde" => "xsd:string",
     "fechaHasta" => "xsd:string",
     "vrSalario" => "xsd:integer",
@@ -87,7 +88,7 @@ $server->register("getInsertarContrato", array(
     return $respuesta;
 }
 
-    function getInsertarPago($codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $numero, $codigoPagoTipo, $fechaDesde, $fechaHasta, $vrSalario, $vrSalarioEmpleado, $vrDeduccion, $vrNeto, $vrDevengado, $cargo, $grupoPago, $zona, $periodoPago, $cuenta, $banco, $pension, $salud ) {    
+    function getInsertarPago($codigoIdentificacionTipo, $identificacionNumero, $codigoEmpresa, $numero, $codigoPagoTipo, $codigoContrato, $fechaDesde, $fechaHasta, $vrSalario, $vrSalarioEmpleado, $vrDeduccion, $vrNeto, $vrDevengado, $cargo, $grupoPago, $zona, $periodoPago, $cuenta, $banco, $pension, $salud ) {    
     $respuesta = "02No se ejecuto ninguna sentencia";
     $servidor = conectar();    
     $strSql = "SELECT codigo_pago_pk FROM pago WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND numero = '" . $numero . "'";
@@ -100,7 +101,7 @@ $server->register("getInsertarContrato", array(
                 $arEmpleado = $arEmpleados->fetch_assoc();
                 $codigoEmpleado = $arEmpleado['codigo_empleado_pk'];
                 $arEmpleados->close();
-                $strSql = "INSERT INTO pago (codigo_empresa_fk, codigo_pago_tipo_fk, codigo_empleado_fk, fecha_desde, fecha_hasta, numero, vr_deducciones, vr_neto, vr_devengado, cargo, grupo_pago, zona, periodo_pago, cuenta, banco, pension, salud, vr_salario, vr_salario_empleado) VALUES ('$codigoEmpresa', '$codigoPagoTipo', '$codigoEmpleado','$fechaDesde','$fechaHasta' , '$numero', '$vrDeduccion', '$vrNeto', '$vrDevengado', '$cargo', '$grupoPago', '$zona', '$periodoPago', '$cuenta', '$banco', '$pension', '$salud', '$vrSalario','$vrSalarioEmpleado');";
+                $strSql = "INSERT INTO pago (codigo_empresa_fk, codigo_pago_tipo_fk, codigo_contrato, codigo_empleado_fk, fecha_desde, fecha_hasta, numero, vr_deducciones, vr_neto, vr_devengado, cargo, grupo_pago, zona, periodo_pago, cuenta, banco, pension, salud, vr_salario, vr_salario_empleado) VALUES ('$codigoEmpresa', '$codigoPagoTipo', '$codigoContrato', '$codigoEmpleado','$fechaDesde','$fechaHasta' , '$numero', '$vrDeduccion', '$vrNeto', '$vrDevengado', '$cargo', '$grupoPago', '$zona', '$periodoPago', '$cuenta', '$banco', '$pension', '$salud', '$vrSalario','$vrSalarioEmpleado');";
                 if ($servidor->query($strSql) === TRUE) {
                     $respuesta = "01";
                 } else {
