@@ -5,15 +5,17 @@ require_once "conexion.php";
 $server = new soap_server();
 $server->configureWSDL("funcionesArdid", "urn:funciones");
 
-$server->register("getInsertarEmpleado", array(
+$server->register("getInsertarEmpleado", array(    
     "codigoIdentificacionTipo" => "xsd:string",
     "identificacionNumero" => "xsd:string",
+    "lugarExpedicionIdentificacion" => "xsd:string",
     "nombre1" => "xsd:string",
     "nombre2" => "xsd:string",
     "apellido1" => "xsd:string",
     "apellido2" => "xsd:string",
     "nombreCorto" => "xsd:string",
-    "correo" => "xsd:string"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarEmpleado", "rpc", "encoded", "Insertar empleados");
+    "correo" => "xsd:string"    
+    ), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarEmpleado", "rpc", "encoded", "Insertar empleados");
 
 $server->register("getInsertarPago", array(
     "codigoIdentificacionTipo" => "xsd:string",
@@ -51,10 +53,11 @@ $server->register("getInsertarPagoDetalle", array(
     "vrHora" => "xsd:integer",
     "vrPago" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago detalle");
 
-$server->register("getInsertarContrato", array(
-    "codigoEmpresa" => "xsd:integer",
-    "numero" => "xsd:string",
+$server->register("getInsertarContrato", array(    
+    "codigoEmpresa" => "xsd:integer",    
     "codigo" => "xsd:integer",
+    "tipo" => "xsd:string",
+    "numero" => "xsd:string",    
     "codigoClase" => "xsd:integer",
     "codigoIdentificacionTipo" => "xsd:string",
     "identificacionNumero" => "xsd:string",
@@ -66,7 +69,7 @@ $server->register("getInsertarContrato", array(
     "vigente" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarContrato", "rpc", "encoded", "Insertar contrato");
 
 
-    function getInsertarEmpleado($codigoIdentificacionTipo, $identificacionNumero, $nombre1, $nombre2, $apellido1, $apellido2, $nombreCorto, $correo) {
+    function getInsertarEmpleado($codigoIdentificacionTipo, $identificacionNumero, $lugarExpedicionIdentificacion, $nombre1, $nombre2, $apellido1, $apellido2, $nombreCorto, $correo) {
     $respuesta = "01";
     $servidor = conectar();
     $strSql = "SELECT codigo_empleado_pk FROM empleado WHERE codigo_identificacion_tipo_fk = '" . $codigoIdentificacionTipo . "' AND identificacion_numero = '" . $identificacionNumero . "'";
@@ -74,7 +77,26 @@ $server->register("getInsertarContrato", array(
         $sentencia->execute();
         $sentencia->store_result();
         if ($sentencia->num_rows <= 0) {
-            $strSql = "INSERT INTO empleado (codigo_identificacion_tipo_fk, identificacion_numero, nombre1, nombre2, apellido1, apellido2, nombre_corto, correo) VALUES ('$codigoIdentificacionTipo', '$identificacionNumero', '$nombre1', '$nombre2', '$apellido1', '$apellido2', '$nombreCorto', '$correo');";
+            $strSql = "INSERT INTO empleado ("
+                    . "codigo_identificacion_tipo_fk, "
+                    . "identificacion_numero, "
+                    . "lugar_expedicion_identificacion, "
+                    . "nombre1, "
+                    . "nombre2, "
+                    . "apellido1, "
+                    . "apellido2, "
+                    . "nombre_corto, "
+                    . "correo) VALUES ("
+                    . "'$codigoIdentificacionTipo', "
+                    . "'$identificacionNumero', "
+                    . "'$lugarExpedicionIdentificacion', "
+                    . "'$nombre1', "
+                    . "'$nombre2', "
+                    . "'$apellido1', "
+                    . "'$apellido2', "
+                    . "'$nombreCorto', "
+                    . "'$correo'"
+                    . ");";
             if ($servidor->query($strSql) === TRUE) {
                 $respuesta = "01";
             } else {
@@ -118,7 +140,7 @@ $server->register("getInsertarContrato", array(
     return $respuesta;
 }                                                                                                                                                           
                                                                                                                                   
-    function getInsertarPagoDetalle($codigoEmpresa, $numero, $codigo, $codigoConcepto, $nombreConcepto, $operacion, $horas, $dias, $porcentaje, $vrHora, $vrPago) {
+    function getInsertarPagoDetalle($codigoEmpresa, $numero, $codigoConcepto, $nombreConcepto, $operacion, $horas, $dias, $porcentaje, $vrHora, $vrPago) {
     $respuesta = "02No se ejecuta ninguna sentencia";
     $servidor = conectar();
     $strSql = "SELECT codigo_pago_detalle_pk FROM pago_detalle WHERE codigo = " . $codigo;
@@ -151,10 +173,10 @@ $server->register("getInsertarContrato", array(
     return $respuesta;
 }
 
-    function getInsertarContrato($codigoEmpresa, $numero, $codigo, $codigoClase, $codigoIdentificacionTipo, $identificacionNumero, $fechaDesde, $fechaHasta, $cargo, $grupoPago, $vrSalario, $vigente) {    
+    function getInsertarContrato($codigoEmpresa, $codigo, $tipo, $numero, $codigoClase, $codigoIdentificacionTipo, $identificacionNumero, $fechaDesde, $fechaHasta, $cargo, $grupoPago, $vrSalario, $vigente) {    
     $respuesta = "02No se ejecuto ninguna sentencia";
     $servidor = conectar();    
-    $strSql = "SELECT codigo_pago_pk FROM pago WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND numero = '" . $numero . "'";
+    $strSql = "SELECT codigo_contrato_pk FROM contrato WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND codigo = '" . $codigo . "'";
     if ($sentencia = $servidor->prepare($strSql)) {
         $sentencia->execute();
         $sentencia->store_result();
@@ -164,7 +186,31 @@ $server->register("getInsertarContrato", array(
                 $arEmpleado = $arEmpleados->fetch_assoc();
                 $codigoEmpleado = $arEmpleado['codigo_empleado_pk'];
                 $arEmpleados->close();                
-                $strSql = "INSERT INTO contrato (codigo_empresa_fk, numero, codigo, codigo_clase_fk, codigo_empleado_fk, fecha_desde, fecha_hasta, cargo, grupo_pago, vr_salario, vigente) VALUES ('$codigoEmpresa', '$numero', '$codigo', '$codigoClase', '$codigoEmpleado','$fechaDesde','$fechaHasta' , '$cargo', '$grupoPago', '$vrSalario', '$vigente');";
+                $strSql = "INSERT INTO contrato ("
+                        . "codigo_empresa_fk, "
+                        . "codigo, "
+                        . "tipo, "
+                        . "numero, "
+                        . "codigo_clase_fk, "
+                        . "codigo_empleado_fk, "
+                        . "fecha_desde, "
+                        . "fecha_hasta, "
+                        . "cargo, "
+                        . "grupo_pago, "
+                        . "vr_salario, "
+                        . "vigente) VALUES ("
+                        . "'$codigoEmpresa', "
+                        . "'$codigo', "
+                        . "'$tipo', "
+                        . "'$numero', "                        
+                        . "'$codigoClase', "
+                        . "'$codigoEmpleado',"
+                        . "'$fechaDesde',"
+                        . "'$fechaHasta' , "
+                        . "'$cargo', "
+                        . "'$grupoPago', "
+                        . "'$vrSalario', "
+                        . "'$vigente');";
                 if ($servidor->query($strSql) === TRUE) {
                     $respuesta = "01";
                 } else {
@@ -173,8 +219,17 @@ $server->register("getInsertarContrato", array(
             } else {
                 $respuesta = '02'.$servidor->error;
             }           
-        } else {
-            $respuesta = "01";
+        } else {               
+            $strSql = "UPDATE contrato SET "
+                    . "vigente = '$vigente', "
+                    . "vr_salario = '$vrSalario'"
+                    . " WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND codigo = '" . $codigo . "';";
+            if ($servidor->query($strSql) === TRUE) {
+                $respuesta = "01";
+            } else {
+                $respuesta = "02" . $servidor->error . $strSql;
+            }                   
+
         }
         $sentencia->close();
     }
