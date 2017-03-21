@@ -66,7 +66,8 @@ $server->register("getInsertarContrato", array(
     "cargo" => "xsd:string",
     "grupoPago" => "xsd:string",
     "vrSalario" => "xsd:integer",
-    "vigente" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarContrato", "rpc", "encoded", "Insertar contrato");
+    "vigente" => "xsd:integer",
+    "auxilioTransporte" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarContrato", "rpc", "encoded", "Insertar contrato");
 
 
     function getInsertarEmpleado($codigoIdentificacionTipo, $identificacionNumero, $lugarExpedicionIdentificacion, $nombre1, $nombre2, $apellido1, $apellido2, $nombreCorto, $correo) {
@@ -173,7 +174,7 @@ $server->register("getInsertarContrato", array(
     return $respuesta;
 }
 
-    function getInsertarContrato($codigoEmpresa, $codigo, $tipo, $numero, $codigoClase, $codigoIdentificacionTipo, $identificacionNumero, $fechaDesde, $fechaHasta, $cargo, $grupoPago, $vrSalario, $vigente) {    
+    function getInsertarContrato($codigoEmpresa, $codigo, $tipo, $numero, $codigoClase, $codigoIdentificacionTipo, $identificacionNumero, $fechaDesde, $fechaHasta, $cargo, $grupoPago, $vrSalario, $vigente, $auxilioTransporte) {    
     $respuesta = "02No se ejecuto ninguna sentencia";
     $servidor = conectar();    
     $strSql = "SELECT codigo_contrato_pk FROM contrato WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND codigo = '" . $codigo . "'";
@@ -198,7 +199,8 @@ $server->register("getInsertarContrato", array(
                         . "cargo, "
                         . "grupo_pago, "
                         . "vr_salario, "
-                        . "vigente) VALUES ("
+                        . "vigente, "
+                        . "auxilio_transporte) VALUES ("
                         . "'$codigoEmpresa', "
                         . "'$codigo', "
                         . "'$tipo', "
@@ -210,7 +212,8 @@ $server->register("getInsertarContrato", array(
                         . "'$cargo', "
                         . "'$grupoPago', "
                         . "'$vrSalario', "
-                        . "'$vigente');";
+                        . "'$vigente', "
+                        . "'$auxilioTransporte');";
                 if ($servidor->query($strSql) === TRUE) {
                     $respuesta = "01";
                 } else {
@@ -222,7 +225,8 @@ $server->register("getInsertarContrato", array(
         } else {               
             $strSql = "UPDATE contrato SET "
                     . "vigente = '$vigente', "
-                    . "vr_salario = '$vrSalario'"
+                    . "vr_salario = '$vrSalario', "
+                    . "auxilio_transporte = '$auxilioTransporte'"
                     . " WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND codigo = '" . $codigo . "';";
             if ($servidor->query($strSql) === TRUE) {
                 $respuesta = "01";
