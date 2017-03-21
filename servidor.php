@@ -140,7 +140,7 @@ $server->register("getInsertarContrato", array(
     return $respuesta;
 }                                                                                                                                                           
                                                                                                                                   
-    function getInsertarPagoDetalle($codigoEmpresa, $numero, $codigoConcepto, $nombreConcepto, $operacion, $horas, $dias, $porcentaje, $vrHora, $vrPago) {
+    function getInsertarPagoDetalle($codigoEmpresa, $numero, $codigo, $codigoConcepto, $nombreConcepto, $operacion, $horas, $dias, $porcentaje, $vrHora, $vrPago) {
     $respuesta = "02No se ejecuta ninguna sentencia";
     $servidor = conectar();
     $strSql = "SELECT codigo_pago_detalle_pk FROM pago_detalle WHERE codigo = " . $codigo;
@@ -158,7 +158,7 @@ $server->register("getInsertarContrato", array(
                 if ($servidor->query($strSql) === TRUE) {
                     $respuesta = "01";
                 } else {
-                    $respuesta = "02" .$servidor->error;
+                    $respuesta = "02" .$servidor->error . " " . $strSql;
                 }                
             } else {
                 $respuesta = "02".$servidor->error;
