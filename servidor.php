@@ -104,7 +104,21 @@ $server->register("getInsertarContrato", array(
                 $respuesta = "02" . $servidor->error;
             }
         } else {
-            $respuesta = "01";
+            $strSql = "UPDATE empleado SET "
+                    . "codigo_identificacion_tipo_fk = '$codigoIdentificacionTipo', "
+                    . "identificacion_numero = '$identificacionNumero', "
+                    . "lugar_expedicion_identificacion = '$lugarExpedicionIdentificacion', "
+                    . "nombre1 = '$nombre1', "
+                    . "nombre2 = '$nombre2', "
+                    . "apellido1 = '$apellido1', "
+                    . "apellido2 = '$apellido2', "
+                    . "nombre_corto = '$nombreCorto', "
+                    . "correo = '$correo' WHERE identificacion_numero = '$identificacionNumero' AND codigo_identificacion_tipo_fk = '$codigoIdentificacionTipo';";
+            if ($servidor->query($strSql) === TRUE) {
+                $respuesta = "01";
+            } else {
+                $respuesta = "02" . $servidor->error . $strSql;
+            }                         
         }
         $sentencia->close();
     }
@@ -233,7 +247,6 @@ $server->register("getInsertarContrato", array(
             } else {
                 $respuesta = "02" . $servidor->error . $strSql;
             }                   
-
         }
         $sentencia->close();
     }
