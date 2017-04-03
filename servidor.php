@@ -69,6 +69,40 @@ $server->register("getInsertarContrato", array(
     "vigente" => "xsd:integer",
     "auxilioTransporte" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarContrato", "rpc", "encoded", "Insertar contrato");
 
+$server->register("getInsertarProgramacion", array(    
+    "codigoEmpresa" => "xsd:integer",    
+    "codigoSoportePago" => "xsd:integer",
+    "dia1" => "xsd:string",
+    "dia2" => "xsd:string",    
+    "dia3" => "xsd:string",    
+    "dia4" => "xsd:string",    
+    "dia5" => "xsd:string",    
+    "dia6" => "xsd:string",    
+    "dia7" => "xsd:string",    
+    "dia8" => "xsd:string",    
+    "dia9" => "xsd:string",    
+    "dia10" => "xsd:string",    
+    "dia11" => "xsd:string",    
+    "dia12" => "xsd:string",    
+    "dia13" => "xsd:string",    
+    "dia14" => "xsd:string",    
+    "dia15" => "xsd:string",    
+    "dia16" => "xsd:string",    
+    "dia17" => "xsd:string",    
+    "dia18" => "xsd:string",    
+    "dia19" => "xsd:string",    
+    "dia20" => "xsd:string",    
+    "dia21" => "xsd:string",    
+    "dia22" => "xsd:string",    
+    "dia23" => "xsd:string",    
+    "dia24" => "xsd:string",    
+    "dia25" => "xsd:string",    
+    "dia26" => "xsd:string",    
+    "dia27" => "xsd:string",    
+    "dia28" => "xsd:string",    
+    "dia29" => "xsd:string",    
+    "dia30" => "xsd:string",    
+    "dia31" => "xsd:string"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarProgramacion", "rpc", "encoded", "Insertar programacion");
 
     function getInsertarEmpleado($codigoIdentificacionTipo, $identificacionNumero, $lugarExpedicionIdentificacion, $nombre1, $nombre2, $apellido1, $apellido2, $nombreCorto, $correo) {
     $respuesta = "01";
@@ -247,6 +281,94 @@ $server->register("getInsertarContrato", array(
             } else {
                 $respuesta = "02" . $servidor->error . $strSql;
             }                   
+        }
+        $sentencia->close();
+    }
+    return $respuesta;
+}                                                                                                                                                           
+
+    function getInsertarProgramacion($codigoEmpresa, $codigoSoportePago, $dia1,$dia2,$dia3,$dia4,$dia5,$dia6,$dia7,$dia8,$dia9,$dia10,$dia11,$dia12,$dia13,$dia14,$dia15,$dia16,$dia17,$dia18,$dia19,$dia20,$dia21,$dia22,$dia23,$dia24,$dia25,$dia26,$dia27,$dia28,$dia29,$dia30,$dia31) {    
+    $respuesta = "02No se ejecuto ninguna sentencia";
+    $servidor = conectar();    
+    $strSql = "SELECT codigo_programacion_pk FROM programacion WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND codigo_soporte_pago_fk = '" . $codigoSoportePago . "'";
+    if ($sentencia = $servidor->prepare($strSql)) {
+        $sentencia->execute();
+        $sentencia->store_result();
+        if ($sentencia->num_rows <= 0) {               
+            $strSql = "INSERT INTO programacion ("
+                    . "codigo_empresa_fk, "
+                    . "codigo_soporte_pago_fk, "
+                    . "dia_1, "
+                    . "dia_2, "
+                    . "dia_3, "
+                    . "dia_4, "
+                    . "dia_5, "
+                    . "dia_6, "
+                    . "dia_7, "
+                    . "dia_8, "
+                    . "dia_9, "
+                    . "dia_10, "
+                    . "dia_11, "
+                    . "dia_12, "
+                    . "dia_13, "
+                    . "dia_14, "
+                    . "dia_15, "
+                    . "dia_16, "
+                    . "dia_17, "
+                    . "dia_18, "
+                    . "dia_19, "
+                    . "dia_20, "
+                    . "dia_21, "
+                    . "dia_22, "
+                    . "dia_23, "
+                    . "dia_24, "
+                    . "dia_25, "
+                    . "dia_26, "
+                    . "dia_27, "
+                    . "dia_28, "
+                    . "dia_29, "
+                    . "dia_30, "
+                    . "dia_31) VALUES ("
+                    . "'$codigoEmpresa', "
+                    . "'$codigoSoportePago', "
+                    . "'$dia1', "
+                    . "'$dia2', "
+                    . "'$dia3', "
+                    . "'$dia4', "
+                    . "'$dia5', "
+                    . "'$dia6', "
+                    . "'$dia7', "
+                    . "'$dia8', "
+                    . "'$dia9', "
+                    . "'$dia10', "
+                    . "'$dia11', "
+                    . "'$dia12', "
+                    . "'$dia13', "
+                    . "'$dia14', "
+                    . "'$dia15', "
+                    . "'$dia16', "
+                    . "'$dia17', "
+                    . "'$dia18', "
+                    . "'$dia19', "
+                    . "'$dia20', "
+                    . "'$dia21', "
+                    . "'$dia22', "
+                    . "'$dia23', "
+                    . "'$dia24', "
+                    . "'$dia25', "
+                    . "'$dia26', "
+                    . "'$dia27', "
+                    . "'$dia28', "
+                    . "'$dia29', "
+                    . "'$dia30', "
+                    . "'$dia31');";
+            if ($servidor->query($strSql) === TRUE) {
+                $respuesta = "01";
+            } else {
+                $respuesta = "02" . $servidor->error . $strSql;
+            }                              
+        } else {               
+            $respuesta = "01";                  
         }
         $sentencia->close();
     }
