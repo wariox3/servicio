@@ -39,7 +39,7 @@ $server->register("getInsertarPago", array(
     "banco" => "xsd:string",
     "pension" => "xsd:string",
     "salud" => "xsd:string",
-    "codigoSoportePago" => "xsd:string"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
+    "codigoSoportePago" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
 
 $server->register("getInsertarPagoDetalle", array(
     "codigoEmpresa" => "xsd:integer",
