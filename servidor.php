@@ -39,7 +39,7 @@ $server->register("getInsertarPago", array(
     "banco" => "xsd:string",
     "pension" => "xsd:string",
     "salud" => "xsd:string",
-    "codigoSoportePago" => "xsd:integer"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
+    "codigoSoportePago" => "xsd:string"), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getInsertarPago", "rpc", "encoded", "Insertar pago");
 
 $server->register("getInsertarPagoDetalle", array(
     "codigoEmpresa" => "xsd:integer",
@@ -193,7 +193,7 @@ $server->register("getInsertarProgramacion", array(
     function getInsertarPagoDetalle($codigoEmpresa, $numero, $codigo, $codigoConcepto, $nombreConcepto, $operacion, $horas, $dias, $porcentaje, $vrHora, $vrPago) {
     $respuesta = "02No se ejecuta ninguna sentencia";
     $servidor = conectar();
-    $strSql = "SELECT codigo_pago_detalle_pk FROM pago_detalle WHERE codigo = " . $codigo;
+    $strSql = "SELECT codigo_pago_detalle_pk FROM pago_detalle WHERE codigo_empresa_fk = $codigoEmpresa AND codigo = " . $codigo;
     if ($sentencia = $servidor->prepare($strSql)) {
         $sentencia->execute();
         $sentencia->store_result();
