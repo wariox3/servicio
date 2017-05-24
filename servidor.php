@@ -268,13 +268,14 @@ $server->register("getInsertarProgramacion", array(
                 } else {
                     $respuesta = "02" . $servidor->error . $strSql;
                 }                   
-            } else {
+            } else {                
                 $respuesta = '02'.$servidor->error;
             }           
         } else {               
             $strSql = "UPDATE contrato SET "
                     . "vigente = '$vigente', "
                     . "vr_salario = '$vrSalario', "
+                    . "cargo = '$cargo', "                    
                     . "auxilio_transporte = '$auxilioTransporte'"
                     . " WHERE codigo_empresa_fk = " . $codigoEmpresa . " AND codigo = '" . $codigo . "';";
             if ($servidor->query($strSql) === TRUE) {
