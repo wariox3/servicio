@@ -5,6 +5,10 @@ require_once "conexion.php";
 $server = new soap_server();
 $server->configureWSDL("funcionesArdid", "urn:funciones");
 
+$server->register("getPrueba", array(    
+    "parametro" => "xsd:string"    
+    ), array("return" => "xsd:string"), "urn:administracion", "urn:administracion#getPrueba", "rpc", "encoded", "Prueba funcionamiento");
+
 $server->register("getInsertarEmpleado", array(    
     "codigoIdentificacionTipo" => "xsd:string",
     "identificacionNumero" => "xsd:string",
@@ -376,6 +380,11 @@ $server->register("getInsertarProgramacion", array(
     }
     return $respuesta;
 }                                                                                                                                                           
+
+    function getPrueba($parametro) {
+        $respuesta = "Hola mundo";
+        return $respuesta;
+    }
 
     if (!isset($HTTP_RAW_POST_DATA))
         $HTTP_RAW_POST_DATA = file_get_contents('php://input');
